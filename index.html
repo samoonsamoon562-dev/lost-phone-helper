@@ -13,452 +13,313 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #101418;
-      color: white;
+      background: #f4f6f8;
+      color: #222;
     }
 
     .container {
-      width: 92%;
-      max-width: 500px;
-      margin: 40px auto;
+      max-width: 420px;
+      margin: 50px auto;
+      padding: 20px;
     }
 
     .card {
-      background: #1b2229;
+      background: white;
       padding: 25px;
-      border-radius: 18px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #aeb7c0;
       margin-bottom: 25px;
     }
 
-    label {
-      display: block;
-      margin: 15px 0 7px;
-      color: #cbd3da;
-    }
-
-    input,
-    textarea {
+    input {
       width: 100%;
       padding: 13px;
-      border: none;
-      border-radius: 10px;
-      background: #2a333c;
-      color: white;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 16px;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
     }
 
     button {
       width: 100%;
-      padding: 14px;
-      margin-top: 15px;
+      padding: 13px;
+      margin-top: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
+      background: #1877f2;
+      color: white;
       font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
     }
 
-    .login-btn {
-      background: #3b82f6;
-      color: white;
+    button:hover {
+      opacity: 0.9;
     }
 
-    .save-btn {
-      background: #16a34a;
-      color: white;
+    .logout {
+      background: #d9534f;
     }
 
-    .lost-btn {
-      background: #dc2626;
-      color: white;
-    }
-
-    .logout-btn {
-      background: #4b5563;
-      color: white;
-    }
-
-    .status {
-      text-align: center;
-      padding: 12px;
-      border-radius: 10px;
-      background: #26313a;
+    .message {
       margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+      background: #eee;
     }
 
-    .hidden {
+    #app {
       display: none;
     }
 
-    .danger {
-      color: #ff6b6b;
-      font-weight: bold;
-    }
-
-    .success {
-      color: #4ade80;
-      font-weight: bold;
+    .contact {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      background: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="card" id="loginCard">
-      <h1>📱 Lost Phone Helper</h1>
+  <div id="login" class="card">
+    <h1>Lost Phone Helper</h1>
 
-      <p class="subtitle">
-        Owner Login
-      </p>
+    <input
+      id="email"
+      type="email"
+      placeholder="Enter email"
+      autocomplete="email"
+    >
 
-      <label>Email</label>
-      <input type="email" id="email" placeholder="Your email">
+    <input
+      id="password"
+      type="password"
+      placeholder="Enter password"
+      autocomplete="current-password"
+    >
 
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Your password">
+    <button onclick="login()">Login</button>
 
-      <button class="login-btn" id="loginBtn">
-        Login
-      </button>
-
-      <p id="loginStatus"></p>
-    </div>
-
-
-    <div class="card hidden" id="dashboard">
-
-      <h1>📱 Lost Phone Helper</h1>
-
-      <p class="subtitle">
-        Owner Dashboard
-      </p>
-
-      <label>Owner Name</label>
-      <input type="text" id="ownerName" placeholder="Your name">
-
-      <label>Contact Number</label>
-      <input type="text" id="contact" placeholder="Phone number">
-
-      <label>Reward</label>
-      <input type="text" id="reward" placeholder="Example: $100">
-
-      <button class="save-btn" id="saveBtn">
-        Save Information
-      </button>
-
-
-      <hr style="margin:25px 0;border-color:#333;">
-
-
-      <label>Lost Phone Message</label>
-
-      <textarea id="lostMessage"
-        placeholder="Example: This phone is lost. Please contact the owner."></textarea>
-
-
-      <button class="lost-btn" id="lostModeBtn">
-        🔴 Turn Lost Mode ON
-      </button>
-
-
-      <div class="status" id="lostStatus">
-        Lost Mode: OFF
-      </div>
-
-
-      <button class="logout-btn" id="logoutBtn">
-        Logout
-      </button>
-
-    </div>
-
+    <div id="loginMessage" class="message"></div>
   </div>
 
 
-  <script type="module">
+  <div id="app" class="card">
+    <h1>Lost Phone Helper</h1>
 
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    <input
+      id="name"
+      type="text"
+      placeholder="Enter owner name"
+    >
 
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    <input
+      id="contact"
+      type="tel"
+      placeholder="Enter contact number"
+    >
 
-    import {
-      getDatabase,
-      ref,
-      set,
-      get,
-      update
-    } from
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    <button onclick="saveInfo()">Save Information</button>
 
+    <button class="logout" onclick="logout()">Logout</button>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDKpQ-GoohLHNxe8kKAn2czsuAaWZjs2DM",
-      authDomain: "lost-phone-helper-4b5ac.firebaseapp.com",
-      databaseURL: "https://lost-phone-helper-4b5ac-default-rtdb.firebaseio.com",
-      projectId: "lost-phone-helper-4b5ac",
-      storageBucket: "lost-phone-helper-4b5ac.firebasestorage.app",
-      messagingSenderId: "159640605772",
-      appId: "1:159640605772:web:1f2374a362735fd19fd0e9",
-      measurementId: "G-G3CPYE7NMN"
-    };
+    <div id="result" class="message"></div>
+  </div>
+
+</div>
 
 
-    const app = initializeApp(firebaseConfig);
+<script type="module">
 
-    const auth = getAuth(app);
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-    const database = getDatabase(app);
-
-
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
-
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    const saveBtn = document.getElementById("saveBtn");
-    const lostModeBtn = document.getElementById("lostModeBtn");
-
-    const loginStatus = document.getElementById("loginStatus");
-
-    const ownerName = document.getElementById("ownerName");
-    const contact = document.getElementById("contact");
-    const reward = document.getElementById("reward");
-    const lostMessage = document.getElementById("lostMessage");
-
-    const lostStatus = document.getElementById("lostStatus");
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+  } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-    let currentUser = null;
-    let lostMode = false;
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKpQ-GoohLHNxe8kKAn2czsuAaWZjs2DM",
+    authDomain: "lost-phone-helper-4b5ac.firebaseapp.com",
+    databaseURL: "https://lost-phone-helper-4b5ac-default-rtdb.firebaseio.com",
+    projectId: "lost-phone-helper-4b5ac",
+    storageBucket: "lost-phone-helper-4b5ac.firebasestorage.app",
+    messagingSenderId: "159640605772",
+    appId: "1:159640605772:web:1f2374a362735fd19fd0e9",
+    measurementId: "G-G3CPYE7NMN"
+  };
 
 
-    loginBtn.addEventListener("click", async () => {
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      if (!email || !password) {
-        loginStatus.textContent = "Email and password are required.";
-        loginStatus.className = "danger";
-        return;
-      }
-
-      try {
-
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        loginStatus.textContent = "Login successful.";
-        loginStatus.className = "success";
-
-      } catch (error) {
-
-        console.error(error);
-
-        loginStatus.textContent =
-          "Login failed. Check your email and password.";
-
-        loginStatus.className = "danger";
-      }
-
-    });
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
 
-    onAuthStateChanged(auth, async (user) => {
+  window.login = async function() {
 
-      if (user) {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("loginMessage");
 
-        currentUser = user;
+    message.style.display = "block";
 
-        loginCard.classList.add("hidden");
-        dashboard.classList.remove("hidden");
-
-        await loadUserData();
-
-      } else {
-
-        currentUser = null;
-
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-
-      }
-
-    });
-
-
-    async function loadUserData() {
-
-      if (!currentUser) return;
-
-      const userRef =
-        ref(database, "users/" + currentUser.uid);
-
-      try {
-
-        const snapshot = await get(userRef);
-
-        if (snapshot.exists()) {
-
-          const data = snapshot.val();
-
-          ownerName.value = data.name || "";
-          contact.value = data.contact || "";
-          reward.value = data.reward || "";
-          lostMessage.value = data.message || "";
-
-          lostMode = data.lostMode === true;
-
-          updateLostModeUI();
-
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
+    if (!email || !password) {
+      message.textContent = "Please enter your email and password.";
+      return;
     }
 
+    message.textContent = "Logging in...";
 
-    saveBtn.addEventListener("click", async () => {
+    try {
 
-      if (!currentUser) return;
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-      try {
+      message.textContent = "Login successful.";
 
-        await update(
-          ref(database, "users/" + currentUser.uid),
-          {
-            name: ownerName.value.trim(),
-            contact: contact.value.trim(),
-            reward: reward.value.trim(),
-            message: lostMessage.value.trim()
-          }
-        );
+    } catch (error) {
 
-        alert("Information saved.");
+      console.error("Firebase Login Error:", error);
 
-      } catch (error) {
-
-        console.error(error);
-
-        alert("Could not save information.");
-
+      if (error.code === "auth/invalid-credential") {
+        message.textContent =
+          "Incorrect email or password.";
       }
 
-    });
-
-
-    lostModeBtn.addEventListener("click", async () => {
-
-      if (!currentUser) return;
-
-      lostMode = !lostMode;
-
-      try {
-
-        await update(
-          ref(database, "users/" + currentUser.uid),
-          {
-            name: ownerName.value.trim(),
-            contact: contact.value.trim(),
-            reward: reward.value.trim(),
-            message: lostMessage.value.trim(),
-            lostMode: lostMode,
-            updatedAt: Date.now()
-          }
-        );
-
-        updateLostModeUI();
-
-      } catch (error) {
-
-        console.error(error);
-
-        lostMode = !lostMode;
-
-        alert("Could not change Lost Mode.");
-
+      else if (error.code === "auth/user-not-found") {
+        message.textContent =
+          "This email is not registered.";
       }
 
-    });
-
-
-    function updateLostModeUI() {
-
-      if (lostMode) {
-
-        lostModeBtn.textContent =
-          "🟢 Turn Lost Mode OFF";
-
-        lostModeBtn.style.background =
-          "#16a34a";
-
-        lostStatus.textContent =
-          "Lost Mode: ON";
-
-        lostStatus.style.color =
-          "#4ade80";
-
-      } else {
-
-        lostModeBtn.textContent =
-          "🔴 Turn Lost Mode ON";
-
-        lostModeBtn.style.background =
-          "#dc2626";
-
-        lostStatus.textContent =
-          "Lost Mode: OFF";
-
-        lostStatus.style.color =
-          "#ff6b6b";
-
+      else if (error.code === "auth/wrong-password") {
+        message.textContent =
+          "Incorrect password.";
       }
 
+      else if (error.code === "auth/invalid-email") {
+        message.textContent =
+          "Invalid email address.";
+      }
+
+      else if (error.code === "auth/too-many-requests") {
+        message.textContent =
+          "Too many attempts. Try again later.";
+      }
+
+      else {
+        message.textContent =
+          "Login failed: " + error.code;
+      }
     }
+  };
 
 
-    logoutBtn.addEventListener("click", async () => {
+  window.logout = async function() {
 
+    try {
       await signOut(auth);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    });
 
-  </script>
+  window.saveInfo = function() {
+
+    const name =
+      document.getElementById("name").value.trim();
+
+    const contact =
+      document.getElementById("contact").value.trim();
+
+    const result =
+      document.getElementById("result");
+
+
+    if (!name || !contact) {
+
+      result.style.display = "block";
+
+      result.textContent =
+        "Please enter the owner name and contact number.";
+
+      return;
+    }
+
+
+    localStorage.setItem("ownerName", name);
+    localStorage.setItem("ownerContact", contact);
+
+    result.style.display = "block";
+
+    result.innerHTML = `
+      <strong>Phone Owner:</strong> ${name}<br>
+      <strong>Contact:</strong> ${contact}<br>
+      <a class="contact" href="tel:${contact}">
+        📞 Call Owner
+      </a>
+    `;
+  };
+
+
+  onAuthStateChanged(auth, (user) => {
+
+    const loginBox =
+      document.getElementById("login");
+
+    const appBox =
+      document.getElementById("app");
+
+
+    if (user) {
+
+      loginBox.style.display = "none";
+      appBox.style.display = "block";
+
+      const savedName =
+        localStorage.getItem("ownerName");
+
+      const savedContact =
+        localStorage.getItem("ownerContact");
+
+
+      if (savedName) {
+        document.getElementById("name").value =
+          savedName;
+      }
+
+      if (savedContact) {
+        document.getElementById("contact").value =
+          savedContact;
+      }
+
+    } else {
+
+      loginBox.style.display = "block";
+      appBox.style.display = "none";
+    }
+
+  });
+
+</script>
 
 </body>
 </html>
